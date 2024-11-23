@@ -1,17 +1,34 @@
-import useFetchApi from "./useFetchApi";
+import { useQuery } from "react-query";
+//import useFetchApi from "./useFetchApi";
 
 function FoodList() {
+  // const {
+  //   data: items,
+  //   isLoding,
+  //   errorMessage,
+  // } = useFetchApi("https://www.themealdb.com/api/json/v1/1/categories.php");
+
   const {
     data: items,
-    isLoding,
-    errorMessage,
-  } = useFetchApi("https://www.themealdb.com/api/json/v1/1/categories.php");
+    isLoading,
+    isError,
+    error,
+    isSuccess,
+  } = useQuery("items", fetchPosts, {
+    retry: false,
+  });
+
+  function fetchPosts() {
+    return fetch("https://www.themealdb.com/api/json/v1/1/categories.php").then(
+      (response) => response.json()
+    );
+  }
 
   return (
     <div>
       <h1>Categories</h1>
-      {isLoding && <div>Loding .......</div>}
-      {items && (
+      {isLoading && <div>Loading...</div>}
+      {isSuccess && (
         <ul>
           {items.categories.map((item) => (
             <li key={item.idCategory}>
@@ -23,7 +40,7 @@ function FoodList() {
           ))}
         </ul>
       )}
-      {errorMessage && <div>{errorMessage}</div>}
+      {isError && <div>{error.message}</div>}
     </div>
   );
 }
